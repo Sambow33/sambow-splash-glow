@@ -9,10 +9,14 @@ type FeatureCardProps = {
 
 const FeatureCard = ({ icon, title, description }: FeatureCardProps) => {
   return (
-    <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl hover:bg-white/20 transition-all duration-300 animate-scale-in">
-      <div className="mb-4 text-white text-4xl">{icon}</div>
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-white/80">{description}</p>
+    <div className="card-highlight p-6 hover:shadow-xl transition-all duration-300 animate-float-up opacity-0 stagger-item">
+      <div className="mb-6 text-white text-5xl flex justify-center">
+        <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-500 to-pink-500">
+          {icon}
+        </div>
+      </div>
+      <h3 className="text-xl font-semibold text-white mb-3 text-center">{title}</h3>
+      <p className="text-white/80 text-center">{description}</p>
     </div>
   );
 };

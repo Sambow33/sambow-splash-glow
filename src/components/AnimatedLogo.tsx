@@ -15,7 +15,7 @@ const AnimatedLogo = () => {
   return (
     <div className={`transition-all duration-1000 transform ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
       <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full blur-xl opacity-70 group-hover:opacity-100 transition duration-1000 animate-pulse-gentle"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-full blur-xl opacity-70 group-hover:opacity-100 transition duration-1000 animate-pulse-gentle"></div>
         <div className="relative glossy-effect">
           <h1 className="text-6xl md:text-8xl font-bold text-white text-shadow animate-float">
             Sambow

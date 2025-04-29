@@ -67,6 +67,12 @@ export default {
 					purple: '#8B5CF6',
 					pink: '#EC4899',
 				},
+				tiktok: {
+					cyan: '#00f2ea',
+					pink: '#ff0050',
+					black: '#010101',
+					gray: '#161823',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -111,7 +117,33 @@ export default {
 				"glow": {
 					'0%, 100%': { filter: 'brightness(1)' },
 					'50%': { filter: 'brightness(1.2)' },
-				}
+				},
+				"float-up": {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(20px)',
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)',
+					},
+				},
+				"bounce-in": {
+					'0%': {
+						opacity: '0',
+						transform: 'scale(0.3)',
+					},
+					'50%': {
+						opacity: '1',
+						transform: 'scale(1.05)',
+					},
+					'70%': {
+						transform: 'scale(0.9)',
+					},
+					'100%': {
+						transform: 'scale(1)',
+					},
+				},
 			},
 			animation: {
 				"accordion-down": 'accordion-down 0.2s ease-out',
@@ -120,6 +152,8 @@ export default {
 				"float": 'float 4s ease-in-out infinite',
 				"scale-in": 'scale-in 0.5s ease-out',
 				"glow": 'glow 2s ease-in-out infinite',
+				"float-up": 'float-up 0.6s ease-out forwards',
+				"bounce-in": 'bounce-in 0.8s ease-out forwards',
 			}
 		}
 	},

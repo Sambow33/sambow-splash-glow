@@ -2,16 +2,20 @@
 import { RiLiveFill } from '@remixicon/react';
 import { RiTranslate2 } from '@remixicon/react';
 import { RiMoneyDollarCircleFill } from '@remixicon/react';
+import { Heart, MessageCircle, Share } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import FeatureCard from '@/components/FeatureCard';
 import Footer from '@/components/Footer';
 import LanguagePicker from '@/components/LanguagePicker';
 import LaunchButton from '@/components/LaunchButton';
 import SupportSection from '@/components/SupportSection';
+import TestimonialsCarousel from '@/components/TestimonialsCarousel';
+import AppPreview from '@/components/AppPreview';
+import StatsBanner from '@/components/StatsBanner';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-sambow flex flex-col overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-tiktok flex flex-col overflow-x-hidden">
       {/* Header */}
       <header className="w-full py-4 px-6">
         <div className="flex justify-end">
@@ -33,8 +37,14 @@ const Index = () => {
           </div>
         </section>
 
+        {/* App Preview Section */}
+        <AppPreview />
+        
+        {/* Stats Banner */}
+        <StatsBanner />
+
         {/* Features Section */}
-        <section className="py-12 px-4">
+        <section className="py-12 px-4 bg-black/10 backdrop-blur-sm">
           <div className="container mx-auto">
             <h2 className="text-3xl font-bold text-white text-center mb-10">Features</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -56,6 +66,9 @@ const Index = () => {
             </div>
           </div>
         </section>
+        
+        {/* Testimonials Section */}
+        <TestimonialsCarousel />
         
         {/* Support Section */}
         <SupportSection />

@@ -26,16 +26,16 @@ const LanguagePicker = () => {
   
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm transition-all">
+      <DropdownMenuTrigger className="flex items-center text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm transition-all border border-white/20">
         {currentLanguage.name}
         <ChevronDown className="ml-2 h-4 w-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white/90 backdrop-blur-lg border-none">
+      <DropdownMenuContent className="bg-black/80 backdrop-blur-lg border-white/10 text-white">
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.code}
-            className={`text-gray-800 hover:bg-purple-100 cursor-pointer ${
-              currentLanguage.code === language.code ? 'font-bold text-sambow-purple' : ''
+            className={`hover:bg-white/10 cursor-pointer ${
+              currentLanguage.code === language.code ? 'font-bold text-cyan-400' : ''
             }`}
             onClick={() => setCurrentLanguage(language)}
           >

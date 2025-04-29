@@ -6,11 +6,11 @@ const LaunchButton = () => {
 
   return (
     <button
-      className={`px-8 py-4 bg-white rounded-full font-semibold text-lg 
+      className={`px-8 py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-full font-semibold text-lg 
                 transition-all duration-300 transform
                 ${isHovered 
-                  ? 'scale-105 shadow-lg text-sambow-purple' 
-                  : 'shadow-md text-sambow-purple'}`}
+                  ? 'scale-105 shadow-lg text-white' 
+                  : 'shadow-md text-white'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
