@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import type { CarouselApi } from "@/components/ui/carousel";
 
 type Testimonial = {
   name: string;
@@ -45,6 +46,24 @@ const testimonials: Testimonial[] = [
 
 const TestimonialsCarousel = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [api, setApi] = useState<CarouselApi | null>(null);
+  
+  const handleSelect = useCallback(() => {
+    if (!api) return;
+    setActiveSlide(api.selectedScrollSnap());
+  }, [api]);
+
+  // Set up the event handlers when the API is available
+  useCallback(() => {
+    if (!api) return;
+    
+    // Add event listeners to the carousel
+    api.on("select", handleSelect);
+    // Remove event listener when component unmounts
+    return () => {
+      api.off("select", handleSelect);
+    };
+  }, [api, handleSelect]);
 
   return (
     <section className="py-16 px-4 bg-black/20 backdrop-blur-md">
@@ -53,11 +72,7 @@ const TestimonialsCarousel = () => {
         
         <Carousel 
           className="w-full max-w-3xl mx-auto"
-          onSelect={(api) => {
-            if (api && typeof api.selectedScrollSnap === 'function') {
-              setActiveSlide(api.selectedScrollSnap());
-            }
-          }}
+          setApi={setApi}
         >
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
@@ -90,7 +105,7 @@ const TestimonialsCarousel = () => {
                 className={`w-2 h-2 rounded-full transition-all ${
                   activeSlide === index ? "bg-white w-4" : "bg-white/50"
                 }`}
-                onClick={() => {}}
+                onClick={() => api?.scrollTo(index)}
               />
             ))}
           </div>
