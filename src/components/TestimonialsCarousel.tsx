@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -54,7 +54,7 @@ const TestimonialsCarousel = () => {
   }, [api]);
 
   // Set up the event handlers when the API is available
-  useCallback(() => {
+  useEffect(() => {
     if (!api) return;
     
     // Add event listeners to the carousel
