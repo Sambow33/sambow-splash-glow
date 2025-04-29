@@ -53,7 +53,11 @@ const TestimonialsCarousel = () => {
         
         <Carousel 
           className="w-full max-w-3xl mx-auto"
-          onSelect={(api) => api && setActiveSlide(api.selectedScrollSnap())}
+          onSelect={(api) => {
+            if (api && typeof api.selectedScrollSnap === 'function') {
+              setActiveSlide(api.selectedScrollSnap());
+            }
+          }}
         >
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
