@@ -1,6 +1,6 @@
 
 import { RiLiveFill } from '@remixicon/react';
-import { PiTranslateFill } from '@remixicon/react';
+import { RiTranslate2 } from '@remixicon/react';
 import { RiMoneyDollarCircleFill } from '@remixicon/react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import FeatureCard from '@/components/FeatureCard';
@@ -44,7 +44,7 @@ const Index = () => {
                 description="Stream in HD with low latency and reach your audience instantly."
               />
               <FeatureCard
-                icon={<PiTranslateFill />}
+                icon={<RiTranslate2 />}
                 title="Multilingual Support"
                 description="Break language barriers with support for multiple languages."
               />
