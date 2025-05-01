@@ -1,6 +1,7 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import i18n from 'i18next';
-import { initReactI18next, TFunction } from 'react-i18next';
+import { initReactI18next, UseTranslationResponse } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Define the structure for our languages
@@ -15,7 +16,7 @@ type LanguageContextType = {
   currentLanguage: Language;
   languages: Language[];
   setLanguage: (code: string) => void;
-  t: TFunction<'translation'>;
+  t: UseTranslationResponse<'translation'>['t'];
   i18n: typeof i18n;
   direction: 'ltr' | 'rtl';
 };
