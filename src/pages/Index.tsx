@@ -5,6 +5,7 @@ import { RiMoneyDollarCircleFill } from '@remixicon/react';
 import { RiMessage2Fill } from '@remixicon/react';
 import { RiGiftFill } from '@remixicon/react';
 import { RiGamepadFill } from '@remixicon/react';
+import { DownloadCloud } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import FeatureCard from '@/components/FeatureCard';
 import Footer from '@/components/Footer';
@@ -16,6 +17,8 @@ import AppPreview from '@/components/AppPreview';
 import StatsBanner from '@/components/StatsBanner';
 import MonetizationSection from '@/components/MonetizationSection';
 import LiveDemo from '@/components/LiveDemo';
+import DownloadButton from '@/components/DownloadButton';
+import DownloadSection from '@/components/DownloadSection';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
@@ -42,8 +45,9 @@ const Index = () => {
           <p className="text-white/70 max-w-lg mb-8">
             {t('hero.subtitle')}
           </p>
-          <div className="mb-12">
+          <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
             <LaunchButton />
+            <DownloadButton variant="gradient" size="md" />
           </div>
         </section>
 
@@ -91,13 +95,17 @@ const Index = () => {
                 description={t('features.gifts.description')}
               />
               <FeatureCard
-                icon={<RiGamepadFill />}
-                title={t('features.games')}
-                description={t('features.games.description')}
+                icon={<DownloadCloud />}
+                title={t('features.download')}
+                description={t('features.download.description')}
+                action={<DownloadButton variant="gradient" size="sm" />}
               />
             </div>
           </div>
         </section>
+        
+        {/* Download Section */}
+        <DownloadSection />
         
         {/* Monetization Section */}
         <MonetizationSection />

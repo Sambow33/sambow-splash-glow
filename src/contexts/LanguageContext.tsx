@@ -1,282 +1,311 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-type Language = {
+// Define the structure for our languages
+export type Language = {
   code: string;
   name: string;
+  dir: 'ltr' | 'rtl';
 };
 
-type TranslationKey = 
-  | 'hero.title'
-  | 'hero.subtitle'
-  | 'features.title'
-  | 'features.streaming'
-  | 'features.streaming.description'
-  | 'features.multilingual'
-  | 'features.multilingual.description'
-  | 'features.monetization'
-  | 'features.monetization.description'
-  | 'features.liveChat'
-  | 'features.liveChat.description'
-  | 'features.gifts'
-  | 'features.gifts.description'
-  | 'features.games'
-  | 'features.games.description'
-  | 'testimonials.title'
-  | 'monetization.title'
-  | 'monetization.subtitle'
-  | 'monetization.gifts.title'
-  | 'monetization.gifts.description'
-  | 'monetization.subscriptions.title'
-  | 'monetization.subscriptions.description'
-  | 'monetization.ads.title'
-  | 'monetization.ads.description'
-  | 'monetization.games.title'
-  | 'monetization.games.description';
-
-type Translations = {
-  [key in TranslationKey]: string;
-};
-
-type TranslationsData = {
-  [languageCode: string]: Translations;
-};
-
-const languages: Language[] = [
-  { name: 'English', code: 'en' },
-  { name: 'العربية', code: 'ar' },
-  { name: 'हिन्दी', code: 'hi' },
-  { name: '中文', code: 'zh' },
-  { name: 'Français', code: 'fr' },
-  { name: 'Español', code: 'es' }
-];
-
-const translations: TranslationsData = {
-  en: {
-    'hero.title': 'Stream. Connect. Earn.',
-    'hero.subtitle': 'The premier live streaming platform for creators worldwide',
-    'features.title': 'Features',
-    'features.streaming': 'High-quality Live Streaming',
-    'features.streaming.description': 'Stream in HD with low latency and reach your audience instantly.',
-    'features.multilingual': 'Multilingual Support',
-    'features.multilingual.description': 'Break language barriers with support for multiple languages.',
-    'features.monetization': 'Earn Money from Streaming',
-    'features.monetization.description': 'Monetize your content and earn rewards from your audience.',
-    'features.liveChat': 'Interactive Live Chat',
-    'features.liveChat.description': 'Engage with viewers in real-time through our advanced chat system.',
-    'features.gifts': 'Virtual Gifts & Rewards',
-    'features.gifts.description': 'Receive virtual gifts that convert to real money from your supporters.',
-    'features.games': 'Interactive Games',
-    'features.games.description': 'Host games during streams to boost engagement and earnings.',
-    'testimonials.title': 'What Streamers Say',
-    'monetization.title': 'Multiple Ways to Monetize',
-    'monetization.subtitle': 'Turn your passion into profit with our comprehensive monetization tools',
-    'monetization.gifts.title': 'Virtual Gifts',
-    'monetization.gifts.description': 'Viewers can send virtual gifts during your streams that convert to real money.',
-    'monetization.subscriptions.title': 'Channel Subscriptions',
-    'monetization.subscriptions.description': 'Offer premium content to subscribers for monthly recurring revenue.',
-    'monetization.ads.title': 'Ad Revenue Sharing',
-    'monetization.ads.description': 'Earn from ads displayed during your streams with our fair revenue share model.',
-    'monetization.games.title': 'Game Integration',
-    'monetization.games.description': 'Host interactive games that viewers pay to participate in and share the profits.'
-  },
-  ar: {
-    'hero.title': 'بث. تواصل. إربح.',
-    'hero.subtitle': 'المنصة الرائدة للبث المباشر للمبدعين في جميع أنحاء العالم',
-    'features.title': 'المميزات',
-    'features.streaming': 'بث مباشر عالي الجودة',
-    'features.streaming.description': 'قم بالبث بدقة عالية مع تأخير منخفض وتواصل مع جمهورك على الفور.',
-    'features.multilingual': 'دعم متعدد اللغات',
-    'features.multilingual.description': 'تخطى حواجز اللغة مع دعم للعديد من اللغات.',
-    'features.monetization': 'اربح المال من البث',
-    'features.monetization.description': 'حقق دخلاً من المحتوى الخاص بك واحصل على مكافآت من جمهورك.',
-    'features.liveChat': 'دردشة مباشرة تفاعلية',
-    'features.liveChat.description': 'تفاعل مع المشاهدين في الوقت الفعلي من خلال نظام الدردشة المتطور.',
-    'features.gifts': 'هدايا افتراضية ومكافآت',
-    'features.gifts.description': 'استلم هدايا افتراضية يمكن تحويلها إلى أموال حقيقية من داعميك.',
-    'features.games': 'ألعاب تفاعلية',
-    'features.games.description': 'استضف ألعابًا خلال البث لزيادة التفاعل والأرباح.',
-    'testimonials.title': 'ماذا يقول المبثون',
-    'monetization.title': 'طرق متعددة لتحقيق الربح',
-    'monetization.subtitle': 'حول شغفك إلى ربح مع أدوات التحقيق النقدي الشاملة',
-    'monetization.gifts.title': 'الهدايا الافتراضية',
-    'monetization.gifts.description': 'يمكن للمشاهدين إرسال هدايا افتراضية أثناء البث تتحول إلى أموال حقيقية.',
-    'monetization.subscriptions.title': 'اشتراكات القناة',
-    'monetization.subscriptions.description': 'قدم محتوى مميزًا للمشتركين مقابل إيرادات شهرية متكررة.',
-    'monetization.ads.title': 'مشاركة عائدات الإعلانات',
-    'monetization.ads.description': 'اربح من الإعلانات التي تظهر أثناء البث مع نموذج مشاركة عادل للإيرادات.',
-    'monetization.games.title': 'تكامل الألعاب',
-    'monetization.games.description': 'استضف ألعابًا تفاعلية يدفع المشاهدون للمشاركة فيها وشارك في الأرباح.'
-  },
-  hi: {
-    'hero.title': 'स्ट्रीम करें। जुड़ें। कमाएं।',
-    'hero.subtitle': 'दुनिया भर के निर्माताओं के लिए प्रमुख लाइव स्ट्रीमिंग प्लेटफॉर्म',
-    'features.title': 'विशेषताएं',
-    'features.streaming': 'उच्च-गुणवत्ता वाली लाइव स्ट्रीमिंग',
-    'features.streaming.description': 'कम लेटेंसी के साथ एचडी में स्ट्रीम करें और अपने दर्शकों तक तुरंत पहुंचें।',
-    'features.multilingual': 'बहुभाषी समर्थन',
-    'features.multilingual.description': 'कई भाषाओं के समर्थन के साथ भाषा बाधाओं को तोड़ें।',
-    'features.monetization': 'स्ट्रीमिंग से पैसा कमाएं',
-    'features.monetization.description': 'अपनी सामग्री को मुद्रीकृत करें और अपने दर्शकों से पुरस्कार प्राप्त करें।',
-    'features.liveChat': 'इंटरैक्टिव लाइव चैट',
-    'features.liveChat.description': 'हमारी उन्नत चैट प्रणाली के माध्यम से वास्तविक समय में दर्शकों के साथ जुड़ें।',
-    'features.gifts': 'आभासी उपहार और पुरस्कार',
-    'features.gifts.description': 'अपने समर्थकों से आभासी उपहार प्राप्त करें जो वास्तविक धन में परिवर्तित होते हैं।',
-    'features.games': 'इंटरैक्टिव गेम्स',
-    'features.games.description': 'जुड़ाव और कमाई बढ़ाने के लिए स्ट्रीम के दौरान खेल होस्ट करें।',
-    'testimonials.title': 'स्ट्रीमर्स क्या कहते हैं',
-    'monetization.title': 'पैसा कमाने के कई तरीके',
-    'monetization.subtitle': 'हमारे व्यापक मुद्रीकरण उपकरणों के साथ अपने जुनून को लाभ में बदलें',
-    'monetization.gifts.title': 'आभासी उपहार',
-    'monetization.gifts.description': 'दर्शक आपके स्ट्रीम के दौरान आभासी उपहार भेज सकते हैं जो वास्तविक धन में बदल जाते हैं।',
-    'monetization.subscriptions.title': 'चैनल सदस्यता',
-    'monetization.subscriptions.description': 'मासिक आवर्ती राजस्व के लिए सदस्यों को प्रीमियम सामग्री प्रदान करें।',
-    'monetization.ads.title': 'विज्ञापन राजस्व साझाकरण',
-    'monetization.ads.description': 'हमारे उचित राजस्व साझाकरण मॉडल के साथ अपने स्ट्रीम के दौरान दिखाए गए विज्ञापनों से कमाई करें।',
-    'monetization.games.title': 'गेम एकीकरण',
-    'monetization.games.description': 'ऐसे इंटरैक्टिव गेम होस्ट करें जिनमें भाग लेने के लिए दर्शक भुगतान करते हैं और लाभ साझा करते हैं।'
-  },
-  zh: {
-    'hero.title': '直播. 连接. 赚钱.',
-    'hero.subtitle': '全球创作者的首选直播平台',
-    'features.title': '特色功能',
-    'features.streaming': '高质量直播',
-    'features.streaming.description': '以高清低延迟进行直播，立即接触您的观众。',
-    'features.multilingual': '多语言支持',
-    'features.multilingual.description': '通过多种语言支持打破语言障碍。',
-    'features.monetization': '从直播中赚钱',
-    'features.monetization.description': '将您的内容货币化并从观众获得奖励。',
-    'features.liveChat': '互动直播聊天',
-    'features.liveChat.description': '通过我们先进的聊天系统与观众实时互动。',
-    'features.gifts': '虚拟礼物和奖励',
-    'features.gifts.description': '接收来自支持者的可转换为真实金钱的虚拟礼物。',
-    'features.games': '互动游戏',
-    'features.games.description': '在直播期间举办游戏以提高参与度和收入。',
-    'testimonials.title': '直播者怎么说',
-    'monetization.title': '多种变现方式',
-    'monetization.subtitle': '利用我们全面的变现工具将您的热情转化为利润',
-    'monetization.gifts.title': '虚拟礼物',
-    'monetization.gifts.description': '观众可以在您的直播期间发送可以转换为真钱的虚拟礼物。',
-    'monetization.subscriptions.title': '频道订阅',
-    'monetization.subscriptions.description': '为订阅者提供优质内容，获取每月重复收入。',
-    'monetization.ads.title': '广告收入分成',
-    'monetization.ads.description': '通过我们公平的收入分成模型，从您直播期间展示的广告中获利。',
-    'monetization.games.title': '游戏集成',
-    'monetization.games.description': '举办互动游戏，观众付费参与并分享利润。'
-  },
-  fr: {
-    'hero.title': 'Diffuser. Connecter. Gagner.',
-    'hero.subtitle': 'La première plateforme de streaming en direct pour les créateurs du monde entier',
-    'features.title': 'Fonctionnalités',
-    'features.streaming': 'Streaming en direct de haute qualité',
-    'features.streaming.description': 'Diffusez en HD avec une faible latence et atteignez votre public instantanément.',
-    'features.multilingual': 'Support multilingue',
-    'features.multilingual.description': 'Brisez les barrières linguistiques avec la prise en charge de plusieurs langues.',
-    'features.monetization': 'Gagnez de l\'argent grâce au streaming',
-    'features.monetization.description': 'Monétisez votre contenu et gagnez des récompenses de votre public.',
-    'features.liveChat': 'Chat en direct interactif',
-    'features.liveChat.description': 'Interagissez avec les spectateurs en temps réel grâce à notre système de chat avancé.',
-    'features.gifts': 'Cadeaux virtuels et récompenses',
-    'features.gifts.description': 'Recevez des cadeaux virtuels qui se convertissent en argent réel de vos supporters.',
-    'features.games': 'Jeux interactifs',
-    'features.games.description': 'Organisez des jeux pendant les streams pour augmenter l\'engagement et les revenus.',
-    'testimonials.title': 'Ce que disent les streamers',
-    'monetization.title': 'Plusieurs façons de monétiser',
-    'monetization.subtitle': 'Transformez votre passion en profit avec nos outils de monétisation complets',
-    'monetization.gifts.title': 'Cadeaux virtuels',
-    'monetization.gifts.description': 'Les spectateurs peuvent envoyer des cadeaux virtuels pendant vos streams qui se convertissent en argent réel.',
-    'monetization.subscriptions.title': 'Abonnements aux chaînes',
-    'monetization.subscriptions.description': 'Proposez du contenu premium aux abonnés pour des revenus mensuels récurrents.',
-    'monetization.ads.title': 'Partage des revenus publicitaires',
-    'monetization.ads.description': 'Gagnez grâce aux publicités affichées pendant vos streams avec notre modèle équitable de partage des revenus.',
-    'monetization.games.title': 'Intégration de jeux',
-    'monetization.games.description': 'Organisez des jeux interactifs auxquels les spectateurs paient pour participer et partagez les bénéfices.'
-  },
-  es: {
-    'hero.title': 'Transmite. Conecta. Gana.',
-    'hero.subtitle': 'La principal plataforma de transmisión en vivo para creadores de todo el mundo',
-    'features.title': 'Características',
-    'features.streaming': 'Transmisión en vivo de alta calidad',
-    'features.streaming.description': 'Transmite en HD con baja latencia y llega a tu audiencia al instante.',
-    'features.multilingual': 'Soporte multilingüe',
-    'features.multilingual.description': 'Rompe las barreras del idioma con soporte para múltiples idiomas.',
-    'features.monetization': 'Gana dinero con la transmisión',
-    'features.monetization.description': 'Monetiza tu contenido y gana recompensas de tu audiencia.',
-    'features.liveChat': 'Chat en vivo interactivo',
-    'features.liveChat.description': 'Interactúa con los espectadores en tiempo real a través de nuestro avanzado sistema de chat.',
-    'features.gifts': 'Regalos virtuales y recompensas',
-    'features.gifts.description': 'Recibe regalos virtuales que se convierten en dinero real de tus seguidores.',
-    'features.games': 'Juegos interactivos',
-    'features.games.description': 'Organiza juegos durante las transmisiones para aumentar la participación y las ganancias.',
-    'testimonials.title': 'Lo que dicen los streamers',
-    'monetization.title': 'Múltiples formas de monetizar',
-    'monetization.subtitle': 'Convierte tu pasión en ganancias con nuestras completas herramientas de monetización',
-    'monetization.gifts.title': 'Regalos virtuales',
-    'monetization.gifts.description': 'Los espectadores pueden enviar regalos virtuales durante tus transmisiones que se convierten en dinero real.',
-    'monetization.subscriptions.title': 'Suscripciones al canal',
-    'monetization.subscriptions.description': 'Ofrece contenido premium a los suscriptores por ingresos mensuales recurrentes.',
-    'monetization.ads.title': 'Reparto de ingresos por publicidad',
-    'monetization.ads.description': 'Gana con los anuncios mostrados durante tus transmisiones con nuestro modelo justo de reparto de ingresos.',
-    'monetization.games.title': 'Integración de juegos',
-    'monetization.games.description': 'Organiza juegos interactivos en los que los espectadores pagan por participar y comparte las ganancias.'
-  }
-};
-
-interface LanguageContextType {
+// Define our language context
+type LanguageContextType = {
   currentLanguage: Language;
   languages: Language[];
   setLanguage: (code: string) => void;
-  t: (key: TranslationKey) => string;
+  t: i18next.TFunction<'translation'>;
+  i18n: i18next.i18n;
   direction: 'ltr' | 'rtl';
-}
-
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(languages[0]);
-  const [direction, setDirection] = useState<'ltr' | 'rtl'>('ltr');
-
-  useEffect(() => {
-    // Set RTL direction for Arabic
-    if (currentLanguage.code === 'ar') {
-      setDirection('rtl');
-      document.documentElement.dir = 'rtl';
-    } else {
-      setDirection('ltr');
-      document.documentElement.dir = 'ltr';
-    }
-  }, [currentLanguage]);
-
-  const setLanguage = (code: string) => {
-    const language = languages.find((lang) => lang.code === code);
-    if (language) {
-      setCurrentLanguage(language);
-    }
-  };
-
-  const t = (key: TranslationKey): string => {
-    return translations[currentLanguage.code]?.[key] || translations.en[key] || key;
-  };
-
-  return (
-    <LanguageContext.Provider
-      value={{
-        currentLanguage,
-        languages,
-        setLanguage,
-        t,
-        direction,
-      }}
-    >
-      {children}
-    </LanguageContext.Provider>
-  );
 };
 
-export const useLanguage = (): LanguageContextType => {
+// Create the context
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+// Hook for using the language context
+export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
 };
+
+// Define our language context provider
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // State for the current language
+  const [currentLanguage, setCurrentLanguage] = useState<Language>({
+    code: 'en',
+    name: 'English',
+    dir: 'ltr',
+  });
+
+  // List of supported languages
+  const languages: Language[] = [
+    { code: 'en', name: 'English', dir: 'ltr' },
+    { code: 'es', name: 'Español', dir: 'ltr' },
+    { code: 'fr', name: 'Français', dir: 'ltr' },
+    { code: 'de', name: 'Deutsch', dir: 'ltr' },
+    { code: 'ar', name: 'العربية', dir: 'rtl' },
+    { code: 'zh', name: '中文', dir: 'ltr' },
+  ];
+
+  // Function to set the language
+  const setLanguage = (code: string) => {
+    const language = languages.find((lang) => lang.code === code);
+    if (language) {
+      setCurrentLanguage(language);
+      i18next.changeLanguage(code);
+    }
+  };
+
+  // Initialize i18next
+  useEffect(() => {
+    i18next
+      .use(LanguageDetector)
+      .use(initReactI18next)
+      .init({
+        debug: false,
+        fallbackLng: 'en',
+        interpolation: {
+          escapeValue: false,
+        },
+        resources: {
+          en: {
+            translation: {
+              'hero.title': 'Stream, Connect, Earn with Sambow',
+              'hero.subtitle': 'The premier live streaming platform for creators and influencers',
+              'features.title': 'What Makes Sambow Special',
+              'features.streaming': 'High Quality Streaming',
+              'features.streaming.description': 'Stream in up to 4K resolution with ultra-low latency',
+              'features.multilingual': 'Global Reach',
+              'features.multilingual.description': 'Automatic translation in 50+ languages',
+              'features.monetization': 'Multiple Revenue Streams',
+              'features.monetization.description': 'Earn from subscriptions, gifts, and brand deals',
+              'features.liveChat': 'Interactive Live Chat',
+              'features.liveChat.description': 'Real-time chat with filters and moderation tools',
+              'features.gifts': 'Virtual Gifts',
+              'features.gifts.description': 'Receive gifts from fans that convert to real money',
+              'features.games': 'Interactive Games',
+              'features.games.description': 'Play games with your audience during live streams',
+              'features.download': 'Mobile App',
+              'features.download.description': 'Take Sambow with you anywhere with our mobile app',
+              'download.button': 'Download App',
+              'download.downloading': 'Downloading...',
+              'download.success': 'Download Started',
+              'download.success.description': 'Your download will begin shortly',
+              'launchButton': 'Launch App',
+              'download.title': 'Get Sambow App',
+              'download.subtitle': 'Download our app and take Sambow with you everywhere. Available on all major platforms.',
+              'download.mobile.title': 'Mobile App',
+              'download.mobile.description': 'Perfect for streaming on the go. Available for iOS and Android.',
+              'download.tablet.title': 'Tablet App',
+              'download.tablet.description': 'Optimized for larger screens with enhanced viewing experience.',
+              'download.desktop.title': 'Desktop App',
+              'download.desktop.description': 'Full-featured streaming studio for professional creators.',
+              'download.requirements': 'System requirements: iOS 13+, Android 8+, Windows 10/11, macOS 10.15+. Internet connection required for streaming features.'
+            },
+          },
+          es: {
+            translation: {
+              'hero.title': 'Transmite, Conecta, Gana con Sambow',
+              'hero.subtitle': 'La principal plataforma de transmisión en vivo para creadores e influencers',
+              'features.title': 'Qué Hace Especial a Sambow',
+              'features.streaming': 'Streaming de Alta Calidad',
+              'features.streaming.description': 'Transmite en resolución de hasta 4K con latencia ultra baja',
+              'features.multilingual': 'Alcance Global',
+              'features.multilingual.description': 'Traducción automática en más de 50 idiomas',
+              'features.monetization': 'Múltiples Fuentes de Ingresos',
+              'features.monetization.description': 'Gana con suscripciones, regalos y acuerdos de marca',
+              'features.liveChat': 'Chat en Vivo Interactivo',
+              'features.liveChat.description': 'Chat en tiempo real con filtros y herramientas de moderación',
+              'features.gifts': 'Regalos Virtuales',
+              'features.gifts.description': 'Recibe regalos de fans que se convierten en dinero real',
+              'features.games': 'Juegos Interactivos',
+              'features.games.description': 'Juega con tu audiencia durante las transmisiones en vivo',
+              'features.download': 'Aplicación Móvil',
+              'features.download.description': 'Lleva Sambow contigo a cualquier parte con nuestra aplicación móvil',
+              'download.button': 'Descargar App',
+              'download.downloading': 'Descargando...',
+              'download.success': 'Descarga Iniciada',
+              'download.success.description': 'Tu descarga comenzará en breve',
+              'launchButton': 'Iniciar App',
+              'download.title': 'Obtén la App de Sambow',
+              'download.subtitle': 'Descarga nuestra app y lleva Sambow contigo a todas partes. Disponible en todas las plataformas principales.',
+              'download.mobile.title': 'App Móvil',
+              'download.mobile.description': 'Perfecta para transmitir sobre la marcha. Disponible para iOS y Android.',
+              'download.tablet.title': 'App para Tablet',
+              'download.tablet.description': 'Optimizada para pantallas más grandes con una experiencia de visualización mejorada.',
+              'download.desktop.title': 'App de Escritorio',
+              'download.desktop.description': 'Estudio de transmisión con todas las funciones para creadores profesionales.',
+              'download.requirements': 'Requisitos del sistema: iOS 13+, Android 8+, Windows 10/11, macOS 10.15+. Se requiere conexión a Internet para las funciones de transmisión.'
+            },
+          },
+          fr: {
+            translation: {
+              'hero.title': 'Diffusez, Connectez, Gagnez avec Sambow',
+              'hero.subtitle': 'La plateforme de streaming en direct pour les créateurs et influenceurs',
+              'features.title': 'Ce Qui Rend Sambow Spécial',
+              'features.streaming': 'Streaming Haute Qualité',
+              'features.streaming.description': 'Diffusez en résolution jusqu\'à 4K avec une latence ultra-faible',
+              'features.multilingual': 'Portée Mondiale',
+              'features.multilingual.description': 'Traduction automatique dans plus de 50 langues',
+              'features.monetization': 'Multiples Sources de Revenus',
+              'features.monetization.description': 'Gagnez grâce aux abonnements, cadeaux et partenariats',
+              'features.liveChat': 'Chat En Direct Interactif',
+              'features.liveChat.description': 'Chat en temps réel avec filtres et outils de modération',
+              'features.gifts': 'Cadeaux Virtuels',
+              'features.gifts.description': 'Recevez des cadeaux de fans convertibles en argent réel',
+              'features.games': 'Jeux Interactifs',
+              'features.games.description': 'Jouez avec votre public pendant les streams',
+              'features.download': 'Application Mobile',
+              'features.download.description': 'Emportez Sambow partout avec notre application mobile',
+              'download.button': 'Télécharger l\'App',
+              'download.downloading': 'Téléchargement...',
+              'download.success': 'Téléchargement Démarré',
+              'download.success.description': 'Votre téléchargement débutera sous peu',
+              'launchButton': 'Lancer l\'App',
+              'download.title': 'Téléchargez l\'App Sambow',
+              'download.subtitle': 'Téléchargez notre application et emportez Sambow partout avec vous. Disponible sur toutes les plateformes principales.',
+              'download.mobile.title': 'App Mobile',
+              'download.mobile.description': 'Parfait pour le streaming en déplacement. Disponible pour iOS et Android.',
+              'download.tablet.title': 'App pour Tablette',
+              'download.tablet.description': 'Optimisée pour les grands écrans avec une expérience de visionnage améliorée.',
+              'download.desktop.title': 'App de Bureau',
+              'download.desktop.description': 'Studio de streaming complet pour les créateurs professionnels.',
+              'download.requirements': 'Configuration système requise : iOS 13+, Android 8+, Windows 10/11, macOS 10.15+. Connexion Internet requise pour les fonctionnalités de streaming.'
+            },
+          },
+          de: {
+            translation: {
+              'hero.title': 'Streame, Verbinde, Verdiene mit Sambow',
+              'hero.subtitle': 'Die führende Livestreaming-Plattform für Creator und Influencer',
+              'features.title': 'Was Sambow Besonders Macht',
+              'features.streaming': 'Hochwertige Streams',
+              'features.streaming.description': 'Streame in bis zu 4K-Auflösung mit ultraniedriger Latenz',
+              'features.multilingual': 'Globale Reichweite',
+              'features.multilingual.description': 'Automatische Übersetzung in über 50 Sprachen',
+              'features.monetization': 'Vielfältige Einnahmequellen',
+              'features.monetization.description': 'Verdiene durch Abos, Geschenke und Markendeals',
+              'features.liveChat': 'Interaktiver Live-Chat',
+              'features.liveChat.description': 'Echtzeit-Chat mit Filtern und Moderationstools',
+              'features.gifts': 'Virtuelle Geschenke',
+              'features.gifts.description': 'Erhalte Geschenke von Fans, die zu echtem Geld werden',
+              'features.games': 'Interaktive Spiele',
+              'features.games.description': 'Spiele mit deinem Publikum während der Livestreams',
+              'features.download': 'Mobile App',
+              'features.download.description': 'Nimm Sambow überall mit unserer mobilen App mit',
+              'download.button': 'App Herunterladen',
+              'download.downloading': 'Wird heruntergeladen...',
+              'download.success': 'Download Gestartet',
+              'download.success.description': 'Dein Download beginnt in Kürze',
+              'launchButton': 'App Starten',
+              'download.title': 'Hol Dir die Sambow App',
+              'download.subtitle': 'Lade unsere App herunter und nimm Sambow überallhin mit. Verfügbar auf allen wichtigen Plattformen.',
+              'download.mobile.title': 'Mobile App',
+              'download.mobile.description': 'Perfekt für Streaming unterwegs. Verfügbar für iOS und Android.',
+              'download.tablet.title': 'Tablet App',
+              'download.tablet.description': 'Optimiert für größere Bildschirme mit verbesserter Darstellung.',
+              'download.desktop.title': 'Desktop App',
+              'download.desktop.description': 'Vollständig ausgestattetes Streaming-Studio für professionelle Creator.',
+              'download.requirements': 'Systemanforderungen: iOS 13+, Android 8+, Windows 10/11, macOS 10.15+. Internetverbindung für Streaming-Funktionen erforderlich.'
+            },
+          },
+          ar: {
+            translation: {
+              'hero.title': 'بث، تواصل، اربح مع سامبو',
+              'hero.subtitle': 'منصة البث المباشر الرائدة للمبدعين والمؤثرين',
+              'features.title': 'ما الذي يجعل سامبو مميزًا',
+              'features.streaming': 'بث عالي الجودة',
+              'features.streaming.description': 'بث بدقة تصل إلى 4K مع زمن استجابة منخفض للغاية',
+              'features.multilingual': 'وصول عالمي',
+              'features.multilingual.description': 'ترجمة تلقائية بأكثر من 50 لغة',
+              'features.monetization': 'مصادر دخل متعددة',
+              'features.monetization.description': 'اكسب من الاشتراكات والهدايا وصفقات العلامات التجارية',
+              'features.liveChat': 'دردشة مباشرة تفاعلية',
+              'features.liveChat.description': 'دردشة في الوقت الفعلي مع فلاتر وأدوات إشراف',
+              'features.gifts': 'هدايا افتراضية',
+              'features.gifts.description': 'استلم هدايا من المعجبين تتحول إلى أموال حقيقية',
+              'features.games': 'ألعاب تفاعلية',
+              'features.games.description': 'العب مع جمهورك أثناء البث المباشر',
+              'features.download': 'تطبيق الجوال',
+              'features.download.description': 'خذ سامبو معك في أي مكان مع تطبيق الهاتف المحمول',
+              'download.button': 'تحميل التطبيق',
+              'download.downloading': 'جاري التحميل...',
+              'download.success': 'بدأ التنزيل',
+              'download.success.description': 'سيبدأ التنزيل الخاص بك قريبًا',
+              'launchButton': 'تشغيل التطبيق',
+              'download.title': 'احصل على تطبيق سامبو',
+              'download.subtitle': 'قم بتنزيل تطبيقنا وخذ سامبو معك في كل مكان. متاح على جميع المنصات الرئيسية.',
+              'download.mobile.title': 'تطبيق الجوال',
+              'download.mobile.description': 'مثالي للبث أثناء التنقل. متاح لنظامي التشغيل iOS و Android.',
+              'download.tablet.title': 'تطبيق الجهاز اللوحي',
+              'download.tablet.description': 'محسن للشاشات الكبيرة مع تجربة مشاهدة محسنة.',
+              'download.desktop.title': 'تطبيق سطح المكتب',
+              'download.desktop.description': 'استوديو بث كامل الميزات للمبدعين المحترفين.',
+              'download.requirements': 'متطلبات النظام: iOS 13+ و Android 8+ و Windows 10/11 و macOS 10.15+. يلزم الاتصال بالإنترنت لميزات البث.'
+            },
+          },
+          zh: {
+            translation: {
+              'hero.title': '与Sambow一起直播、连接和赚钱',
+              'hero.subtitle': '创作者和影响者的首选直播平台',
+              'features.title': '是什么让Sambow与众不同',
+              'features.streaming': '高质量流媒体',
+              'features.streaming.description': '以高达4K分辨率和超低延迟进行直播',
+              'features.multilingual': '全球覆盖',
+              'features.multilingual.description': '50多种语言的自动翻译',
+              'features.monetization': '多元化收入来源',
+              'features.monetization.description': '从订阅、礼物和品牌合作中获利',
+              'features.liveChat': '互动直播聊天',
+              'features.liveChat.description': '实时聊天，配备过滤和审核工具',
+              'features.gifts': '虚拟礼物',
+              'features.gifts.description': '接收粉丝礼物，转换为真实货币',
+              'features.games': '互动游戏',
+              'features.games.description': '在直播期间与观众一起玩游戏',
+              'features.download': '移动应用',
+              'features.download.description': '通过我们的移动应用，随时随地使用Sambow',
+              'download.button': '下载应用',
+              'download.downloading': '下载中...',
+              'download.success': '下载已开始',
+              'download.success.description': '您的下载即将开始',
+              'launchButton': '启动应用',
+              'download.title': '获取Sambow应用',
+              'download.subtitle': '下载我们的应用，随时随地使用Sambow。可在所有主要平台上使用。',
+              'download.mobile.title': '移动应用',
+              'download.mobile.description': '非常适合在旅途中进行流式传输。适用于iOS和Android。',
+              'download.tablet.title': '平板电脑应用',
+              'download.tablet.description': '针对更大的屏幕进行了优化，具有增强的观看体验。',
+              'download.desktop.title': '桌面应用',
+              'download.desktop.description': '适用于专业创作者的全功能流媒体工作室。',
+              'download.requirements': '系统要求：iOS 13+，Android 8+，Windows 10/11，macOS 10.15+。流媒体功能需要互联网连接。'
+            },
+          },
+        },
+      });
+
+    // Set current language based on detected language
+    const detectedLanguage = i18next.language.substring(0, 2);
+    const initialLanguage = languages.find((lang) => lang.code === detectedLanguage) || currentLanguage;
+    setCurrentLanguage(initialLanguage);
+  }, [currentLanguage, languages]);
+
+  // Provide the context value
+  const value: LanguageContextType = {
+    currentLanguage,
+    languages,
+    setLanguage,
+    t: i18next.t,
+    i18n: i18next,
+    direction: currentLanguage.dir,
+  };
+
+  return (
+    <LanguageContext.Provider value={value}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export default LanguageContext;
