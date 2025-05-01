@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import i18next from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import i18n from 'i18next';
+import { initReactI18next, TFunction } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Define the structure for our languages
@@ -15,8 +15,8 @@ type LanguageContextType = {
   currentLanguage: Language;
   languages: Language[];
   setLanguage: (code: string) => void;
-  t: i18next.TFunction<'translation'>;
-  i18n: i18next.i18n;
+  t: TFunction<'translation'>;
+  i18n: typeof i18n;
   direction: 'ltr' | 'rtl';
 };
 
@@ -56,13 +56,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const language = languages.find((lang) => lang.code === code);
     if (language) {
       setCurrentLanguage(language);
-      i18next.changeLanguage(code);
+      i18n.changeLanguage(code);
     }
   };
 
   // Initialize i18next
   useEffect(() => {
-    i18next
+    i18n
       .use(LanguageDetector)
       .use(initReactI18next)
       .init({
@@ -286,7 +286,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
 
     // Set current language based on detected language
-    const detectedLanguage = i18next.language.substring(0, 2);
+    const detectedLanguage = i18n.language.substring(0, 2);
     const initialLanguage = languages.find((lang) => lang.code === detectedLanguage) || currentLanguage;
     setCurrentLanguage(initialLanguage);
   }, [currentLanguage, languages]);
@@ -296,8 +296,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     currentLanguage,
     languages,
     setLanguage,
-    t: i18next.t,
-    i18n: i18next,
+    t: i18n.t,
+    i18n: i18n,
     direction: currentLanguage.dir,
   };
 
