@@ -16,7 +16,7 @@ type LanguageContextType = {
   currentLanguage: Language;
   languages: Language[];
   setLanguage: (code: string) => void;
-  t: UseTranslationResponse<'translation'>['t'];
+  t: UseTranslationResponse<'translation', undefined>['t'];
   i18n: typeof i18n;
   direction: 'ltr' | 'rtl';
 };
